@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <title>Pagina Principal</title>
+</head>
+<body onload="Cargar_Almacenado()" class="p-3 mb-2 bg-primary text-white">
+    <div><br>
+        <input type="file" id="fileXML" class="p-3 mb-2 bg-success text-white">
+        <button id="Ventana_Peticiones" onclick="Peticiones()" type="button" class="btn btn-light" disabled>Peticiones</button>
+        <button type="button" class="btn btn-dark">Ayuda</button>
+    </div>
+    <div>
+        <br>
+        <table>
+            <tr align="center">
+                <td>
+                    <h3>ENTRADA</h3>
+                </td>
+                <td>
+                    <table class="Tabla Send_Reset">
+                        <tr>
+                            <td width="30"></td>
+                            <td>
+                                <button id="enviarCargado" onclick="EnviarProceso()" type="button" class="btn btn-success" disabled>Enviar</button>
+                            </td>
+                            <td width="60"></td>
+                            <td>
+                                <button onclick="Reiniciar()" type="button" class="btn btn-danger">Reset</button>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <textarea id="MostrarXML_entrada"  cols="90" rows="20" disabled></textarea>
+                </td>
+            </tr>
+        </table>
+    </div>
+    
+
+ <!--==Creacion de funciones === -->       
+ <script>
+        function AbrirArchivo(evento){
+            let archivo = evento.target.files[0];
+
+            if(archivo){
+                let reader = new FileReader();
+                reader.onload= function(e){
+                    let contenido=e.target.result;
+                    document.getElementById('MostrarXML_entrada').innerHTML=contenido;
+                    Almacenado_MemoriaNav=contenido;
+                    sessionStorage.setItem("Para_Mostar_XML",Almacenado_MemoriaNav)
+                    document.getElementById("fileXML").disabled=true;
+                    document.getElementById("enviarCargado").disabled=false;
+                    console.log(archivo);
+                };
+
+                reader.readAsText(archivo);
+
+            }else{
+                console.log('No se selecciono Archivo');
+            }
+        }
+
+
+        window.addEventListener('load', () => {
+            document.getElementById('fileXML').addEventListener('change',AbrirArchivo);
+        });
+
+
+        function Cargar_Almacenado(){
+            var MostrarXMLEntrada = document.querySelector('#MostrarXML_entrada')
+            try{
+                var Almacenado_MemoriaNav = sessionStorage.Para_Mostar_XML
+                console.log(Almacenado_MemoriaNav)
+                
+                if(Almacenado_MemoriaNav != "" && Almacenado_MemoriaNav != undefined){     
+                    MostrarXMLEntrada.innerHTML=Almacenado_MemoriaNav
+                    document.getElementById("fileXML").disabled=true;
+                    document.getElementById("Ventana_Peticiones").disabled=false;
+                }
+            
+            }catch(error){console.log("error en funcion: Cargar_Almacenado")}
+        }
+
+
+        function Peticiones(){
+            location.href="http://localhost:8000/Peticiones"    //Permite cambiar hacia la ventana de -Vista_Peticiones-
+        }
+
+
+        function EnviarProceso(){
+            document.getElementById("enviarCargado").disabled=true;
+            document.getElementById("Ventana_Peticiones").disabled=false;
+            var DatosArchivoXMLCargado = sessionStorage.Para_Mostar_XML
+            var objetoDatosXML= {
+                'XMLdatos':DatosArchivoXMLCargado
+            }
+
+            fetch('http://localhost:4000/AlmacenarXML', {
+                method: 'POST',
+                body: JSON.stringify(objetoDatosXML),
+                headers:{
+                    'Content-Type':'application/json'
+                }
+            }).then(response => response.json())
+            .catch(error =>{
+                console.log(error)
+            })
+            .then(res =>{
+                console.log('!!todo correcto!!')
+            })
+        }
+
+
+        function Reiniciar(){
+            sessionStorage.setItem("Para_Mostar_XML","")
+            location.href="http://localhost:8000/"
+        }
+        /*
+        como se esta utilizando django, se debe enviar la ventana a abrir, de la forma anterior, y no
+        olvidar que tambien se debe agregar la funcion en views y agregar la ruta en urls
+        
+        Ya que se esta utilizando un framework para Front-end no se puede cambiar entre ventanas de la siguiente
+        forma: location.href="index.html"
+        */
+    </script>                                                   
+
+</body>
+</html>
