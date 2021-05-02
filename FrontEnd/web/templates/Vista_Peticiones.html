@@ -8,7 +8,7 @@
 <body class="p-3 mb-2 bg-primary text-white">
     <button onclick="Salir()" type="button" class="btn btn-danger">REGRESAR</button>
     <div><br>
-        <button type="button" class="btn btn-success">Consultar Datos</button>
+        <button onclick="MostrarXMLsalida()" type="button" class="btn btn-success">Consultar Datos</button>
         
     </div>
     <div>
@@ -56,7 +56,7 @@
             </tr>
             <tr>
                 <td>
-                    <textarea id="MostrarXML_entrada"  cols="90" rows="18" disabled></textarea>
+                    <textarea id="MostrarXML_salida"  cols="90" rows="18" disabled></textarea>
                 </td>
             </tr>
         </table>
@@ -66,19 +66,17 @@
  <!--==Creacion de funciones === -->       
     <script>
 
-        function BuscarXML(){
-            var MostrarXMLEntrada = document.querySelector('#MostrarXML_entrada')
+        function MostrarXMLsalida(){
+            var MostrarXMLSalida = document.querySelector('#MostrarXML_salida')
 
-            fetch('http://localhost:4000/AbrirXML')
+            fetch('http://localhost:4000/CargarXMLsalida')
             .then(response => response.json())
             .catch(error => {
                 console.log(error)
             })
             .then(res =>{
-                if (res[0] != "Archivo No Seleccionado"){
-                    for(var i in res){
-                        MostrarXMLEntrada.innerHTML += res[i]   //res toma la parte de la respuesta del Json, no el mensaje
-                    }
+                for(var i in res){
+                    MostrarXMLSalida.innerHTML += res[i]   //res toma la parte de la respuesta del Json, no el mensaje
                 }
             })
         }
