@@ -4,8 +4,8 @@ crearXML=Crear_XMLsalida()
 
 class Filtrar:
     
+    
     def ClasificarDatos(self, ListaDatos):
-        
         MismaFecha=[]
         DiferenteFecha=[]
         DatosPorFechas=[]   #Contendrá todas las fechas clasificadas
@@ -13,6 +13,8 @@ class Filtrar:
         posicion=1
         siguiente=1
         listaFechasAgregadas=[]    #lista de fechas registradas
+        ListaConsultas=[]
+        
         
 
         #Clasifica datos por fecha, misma fecha y diferente fecha
@@ -140,9 +142,9 @@ class Filtrar:
             ListaDatosFiltrados.append(totalReportadores)   #Se agrega total de Reportes de esta fecha
             ListaDatosFiltrados.append(ReportadorRegistrado)  #se agrega reportador con cant. repeticiones
             ListaDatosFiltrados.append(CodigoRegistrado)    #se agrega codigo error con cant. repeticiones      
-            ListaDatosFiltrados.append(afectados)   #Se agrega todos los afedtados de esta fecha
+            ListaDatosFiltrados.append(afectados)   #Se agrega todos los afectados de esta fecha
 
-            #ListaDatosFiltrados=[fecha1,TotalReportes,[Reportador1,repReportador,....],[CodigoErr,RepCodigo,...],[Afectados]..]
+            #ListaDatosFiltrados=[fecha1,TotalReportes,[Reportador1,repReportador,....],[CodigoErr,RepCodigo,...],[Afectados], ...]
 
             #Mostrar filtracion de datos con repeticion
             print("------------------------")
@@ -174,4 +176,7 @@ class Filtrar:
 
         print(">>>>>>>>>>>FINALIZO FILTRACION<<<<<<<<<<")
         crearXML.CrearXMLSalida(ListaDatosFiltrados,DiferenteFecha)
+        ListaConsultas.append(ListaDatosFiltrados)
+        ListaConsultas.append(DiferenteFecha)
+        return ListaConsultas
         

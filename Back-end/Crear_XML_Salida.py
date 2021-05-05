@@ -13,7 +13,7 @@ class Crear_XMLsalida:
             CantFechasAgrupadas+=1
             siguiente+=5
 
-        SalidaXML=open("SalidaXML.xml","w")    
+        SalidaXML=open("estadisticas.xml","w")    
         SalidaXML.write("<ESTADISTICAS>\n")
 
         PosicionFecha=0

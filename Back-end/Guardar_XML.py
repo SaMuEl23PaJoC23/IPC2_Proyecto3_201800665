@@ -28,6 +28,7 @@ class Obtener_XML:
                     linea=re.sub("<","",linea)
                     linea=re.sub(">","",linea)
                     linea=re.sub('"',"",linea)
+                    linea=re.sub("\r","",linea)
 
                     if ContadorLinea == 1:
                         fecha=re.search(r'[0-9|/]+',linea)  #obtiene las fechas de (0-9)(0-9)/(0-9)(0-9)/(0-9)(0-9)
@@ -98,7 +99,7 @@ class Obtener_XML:
 
 
             print(">>>>>>>>>>>>>>FINALIZO ALMACENAMIENTO<<<<<<<<<<<<")
-            obj_filtracion.ClasificarDatos(TodosLosDatos)
+            return obj_filtracion.ClasificarDatos(TodosLosDatos)
 
         except FileNotFoundError:
             print("\n>>> Archivo NO existente...<<<\n")
