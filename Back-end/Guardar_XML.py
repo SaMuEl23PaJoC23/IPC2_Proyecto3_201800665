@@ -12,15 +12,13 @@ class Obtener_XML:
             IndiceEvento=1
             MensajeError=""
             lineas=ListaDatos
-
-            ContadorLinea=1
             
 
             for linea in lineas:
                 if "<EVENTO>" in linea:
                     Datos_EtiquetaEvento.append(str(IndiceEvento))
                     IndiceEvento+=1
-                    ContadorLinea=1
+                    flagSiguienteLinea=False
 
                 elif "<EVENTOS>" not in linea and "</EVENTO>" not in linea  and "</EVENTOS>" not in linea:
                     
@@ -30,7 +28,7 @@ class Obtener_XML:
                     linea=re.sub('"',"",linea)
                     linea=re.sub("\r","",linea)
 
-                    if ContadorLinea == 1:
+                    if "Guatemala" in linea:
                         fecha=re.search(r'[0-9|/]+',linea)  #obtiene las fechas de (0-9)(0-9)/(0-9)(0-9)/(0-9)(0-9)
                         if fecha != None:
                             Datos_EtiquetaEvento.append(fecha.group())
@@ -38,7 +36,7 @@ class Obtener_XML:
                             print("No Agrega-Fecha-")
                     
 
-                    elif ContadorLinea == 2:
+                    elif "Reportado por" in linea:
                         reportador=re.search(r'([\w\.]+)@([\w\.]+)(\.[\w\.]+)',linea)   #Obtiene correo de quien reporta
                         if reportador != None:
                             Datos_EtiquetaEvento.append(reportador.group())
@@ -46,7 +44,7 @@ class Obtener_XML:
                             print("No Agrega-Quien Reporta-")
                          
                         
-                    elif ContadorLinea == 3:
+                    elif "Usuarios afectados" in linea:
                         afectados=re.findall(r'([\w\.]+@[\w\.]+\.[\w\.]+)',linea)   #Obtiene Correos de los afectados
                         if afectados != None:
                             Datos_EtiquetaEvento.append(afectados)
@@ -54,7 +52,7 @@ class Obtener_XML:
                             print("No Agrega-Afectados-")
 
 
-                    elif ContadorLinea == 4:
+                    elif "Error" in linea:
                         CodError=re.search(r'([0-9]{5,5})',linea)   #Obtiene Numero de error
                         MensajeErr=re.search(r'(-.+(\w)+)',linea)   #Obtiene descripcion de error
                         if CodError != None:
@@ -64,18 +62,19 @@ class Obtener_XML:
 
                         if MensajeErr != None:
                             MensajeError+=MensajeErr.group()+" "
+                            flagSiguienteLinea=True
                         else:
                             print("No Agrega-Desc.Error-")
 
 
-                    elif ContadorLinea > 4:
+                    elif flagSiguienteLinea == True:
                         MensajeErr=re.search(r'(\w.+)+',linea)   #Obtiene siguientes lineas de descripcion de error
                         if MensajeErr != None:
                             MensajeError+=MensajeErr.group()
                         else:
                             print("No Agrega-Desc.Error- siguiente linea")
                     
-                    ContadorLinea+=1
+                    flagSiguienteLinea=False
 
                 elif "</EVENTO>" in linea:
                     Datos_EtiquetaEvento.append(MensajeError)

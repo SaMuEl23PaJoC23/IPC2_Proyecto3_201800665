@@ -1,13 +1,7 @@
-ArchivoXML=open("EJEMPLO.xml","w")
-ArchivoXML.write("<ESTADISTICAS>\n")
+import webbrowser as wb
 
-nombre="samuel"
-fecha="22/10/1997"
-for i in range(3):
-    ArchivoXML.write("\t<ESTADISTICA>\n")
-    ArchivoXML.write("\t\t<FECHA>"+fecha+"</FECHA>\n")
-    ArchivoXML.write("\t\t<REPORTADO_POR>"+nombre+"</REPORTADO_POR>\n")
-    ArchivoXML.write("\t</ESTADISTICA>\n")
+class Abrir_Documentacion:
 
-ArchivoXML.write("</ESTADISTICAS>")
-ArchivoXML.close()
+    def AbrirDocumentacion(self):
+        #abrirá unicamente si se ingresa la ruta completa de la hubicacion del archivo pdf
+        wb.open_new(r'C:\Users\samal\Desktop\Proyecto_3\IPC2_Proyecto3_201800665\Back-end\documentacion.pdf')

@@ -21,5 +21,6 @@ from web import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.index),
-    path('Peticiones/',views.Vista_Peticiones)
+    path('Peticiones/',views.Vista_Peticiones),
+    path('Ayuda/', views.Datos_Personales)
 ]

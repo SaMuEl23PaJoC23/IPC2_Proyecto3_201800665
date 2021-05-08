@@ -3,6 +3,7 @@ from flask_cors import CORS
 
 from Guardar_XML import Obtener_XML
 from Ordenar_InfoConsulta import OrdenarPorConsulta
+from prueba import Abrir_Documentacion
 
 app = Flask(__name__)
 CORS(app)
@@ -11,6 +12,7 @@ ListaConsultas=[]   #[0]=ListaDatosFiltrados=[fecha1,TotalReportes,[Reportador1,
 ListaFechas=[]
 Obj_XML=Obtener_XML()
 Obj_Orden=OrdenarPorConsulta()
+obj_Documentacion=Abrir_Documentacion()
 
 
 #--------------Rutas hacia filtraciones y procesos en flask---------------------------
@@ -26,12 +28,14 @@ def GuardarXML():
     return respuesta
 
 
+
 @app.route('/CargarXMLsalida', methods=['GET'])
 def CargarXMLsalida():
     with open("estadisticas.xml") as archivo:
         lineas=archivo.readlines()
     respuesta=jsonify({"mensaje":lineas})
     return respuesta
+
 
 
 @app.route('/ListaFechas', methods=['GET'])
@@ -64,12 +68,22 @@ def ConsultarFecha():
     return respuesta
 
 
+
 @app.route('/OrdenarCodigo/<string:ValorOrdenamiento>', methods=['GET'])
 def ConsultarCodigo(ValorOrdenamiento):
 
     resultadoConsulta=Obj_Orden.OrdenarporCodigo(ListaConsultas, ValorOrdenamiento)
     respuesta=jsonify({"mensaje":resultadoConsulta})
     
+    return respuesta
+
+
+
+@app.route('/AbrirDocumentacion', methods=['GET'])
+def AbrirDocu():
+    obj_Documentacion.AbrirDocumentacion()
+    respuesta=jsonify({'mensaje':'Documentacion Abierta'})
+
     return respuesta
 
 
