@@ -12,15 +12,22 @@ class Obtener_XML:
             IndiceEvento=1
             MensajeError=""
             lineas=ListaDatos
+            flagFaltaDato=False
+            flagCompleto=False
             
+            ContadorLinea=1
+            NumEvento=0
 
             for linea in lineas:
                 if "<EVENTO>" in linea:
                     Datos_EtiquetaEvento.append(str(IndiceEvento))
                     IndiceEvento+=1
-                    flagSiguienteLinea=False
+                    ContadorLinea=1
+                    NumEvento+=1
+                    flagFaltaDato=False
+                    flagCompleto=False
 
-                elif "<EVENTOS>" not in linea and "</EVENTO>" not in linea  and "</EVENTOS>" not in linea:
+                elif "<EVENTOS>" not in linea and "</EVENTO>" not in linea  and "</EVENTOS>" not in linea and flagFaltaDato==False:
                     
                     linea=re.sub("\t","",linea) #Forma 2 de eliminar caracteres no deseados con RegEx
                     linea=re.sub("<","",linea)
@@ -28,57 +35,67 @@ class Obtener_XML:
                     linea=re.sub('"',"",linea)
                     linea=re.sub("\r","",linea)
 
-                    if "Guatemala" in linea:
-                        fecha=re.search(r'[0-9|/]+',linea)  #obtiene las fechas de (0-9)(0-9)/(0-9)(0-9)/(0-9)(0-9)
-                        if fecha != None:
+                    if ContadorLinea == 1:
+                        fecha=re.search(r'[0-9|/]+',linea)  #obtiene las fechas
+                        if fecha != None and "/" in linea:
                             Datos_EtiquetaEvento.append(fecha.group())
                         else:
-                            print("No Agrega-Fecha-")
+                            print("No Agrega-Fecha-",NumEvento)
+                            flagFaltaDato=True
+
                     
 
-                    elif "Reportado por" in linea:
-                        reportador=re.search(r'([\w\.]+)@([\w\.]+)(\.[\w\.]+)',linea)   #Obtiene correo de quien reporta
-                        if reportador != None:
+                    elif ContadorLinea == 2:
+                        reportador=re.search(r'([\w\.]+)@([\w\.]+)(\.[\w\.]+)',linea)   #Obtiene correo de quien reporta,
+                        if reportador != None and "Reportado por:" in linea:                                          #no importando que se encuentre en Mayusculas
                             Datos_EtiquetaEvento.append(reportador.group())
                         else:
-                            print("No Agrega-Quien Reporta-")
+                            print("No Agrega-Quien Reporta-",NumEvento)
+                            flagFaltaDato=True
                          
                         
-                    elif "Usuarios afectados" in linea:
+
+                    elif ContadorLinea == 3:
                         afectados=re.findall(r'([\w\.]+@[\w\.]+\.[\w\.]+)',linea)   #Obtiene Correos de los afectados
-                        if afectados != None:
+                        if afectados != None and "Usuarios afectados:" in linea:
                             Datos_EtiquetaEvento.append(afectados)
                         else:
-                            print("No Agrega-Afectados-")
+                            print("No Agrega-Afectados-",NumEvento)
+                            flagFaltaDato=True
 
 
-                    elif "Error" in linea:
+
+                    elif ContadorLinea == 4:
                         CodError=re.search(r'([0-9]{5,5})',linea)   #Obtiene Numero de error
                         MensajeErr=re.search(r'(-.+(\w)+)',linea)   #Obtiene descripcion de error
-                        if CodError != None:
+                        if CodError != None and "Error:" in linea:
                             Datos_EtiquetaEvento.append(CodError.group())
-                        else:
-                            print("No Agrega-No.Error-")
-
-                        if MensajeErr != None:
                             MensajeError+=MensajeErr.group()+" "
-                            flagSiguienteLinea=True
+                            flagCompleto=True
                         else:
-                            print("No Agrega-Desc.Error-")
+                            print("No Agrega-No.Error-",NumEvento)
+                            flagFaltaDato=True
+                        
 
 
-                    elif flagSiguienteLinea == True:
+
+                    elif ContadorLinea > 4:
                         MensajeErr=re.search(r'(\w.+)+',linea)   #Obtiene siguientes lineas de descripcion de error
                         if MensajeErr != None:
                             MensajeError+=MensajeErr.group()
                         else:
-                            print("No Agrega-Desc.Error- siguiente linea")
+                            print("No Agrega-Desc.Error- siguiente linea",NumEvento)
                     
-                    flagSiguienteLinea=False
+                    
+                    ContadorLinea+=1
 
                 elif "</EVENTO>" in linea:
-                    Datos_EtiquetaEvento.append(MensajeError)
-                    TodosLosDatos.append(Datos_EtiquetaEvento)
+                    if flagFaltaDato==False and flagCompleto==True:
+                        Datos_EtiquetaEvento.append(MensajeError)
+                        TodosLosDatos.append(Datos_EtiquetaEvento)
+                    else:
+                        IndiceEvento-=1
+                        
                     MensajeError=""
                     Datos_EtiquetaEvento=[]
                     
@@ -89,13 +106,6 @@ class Obtener_XML:
                     linea=linea.replace("<","")
                     linea=linea.replace(">","")
                     linea=linea.replace('"',"")"""
-
-            print("---------Datos Filtrados-------")
-            for i in range(len(TodosLosDatos)):
-                print("-------GRUPO: "+str(i+1))
-                for j in range(6):
-                    print(TodosLosDatos[i][j])
-
 
             print(">>>>>>>>>>>>>>FINALIZO ALMACENAMIENTO<<<<<<<<<<<<")
             return obj_filtracion.ClasificarDatos(TodosLosDatos)
